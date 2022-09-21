@@ -17,9 +17,15 @@ class UserController extends Controller
     public function purchase(Request $request)
     {
         //make a purchase
+        $request->validate([
+            'name' => 'required|string|max:80',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|numeric|digits:10',
+        ]);
+
         $user = User::query()->firstOrCreate([
             'name' => $request->input('name'),
-            'phone' => $request->input('mobile'),
+            'phone' => $request->input('phone'),
             'email' => $request->input('email'),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', //password
         ]);
@@ -28,7 +34,7 @@ class UserController extends Controller
             ->create([
                 'customer_name' => $request->input('name'),
                 'customer_email' => $request->input('email'),
-                'customer_mobile' => $request->input('mobile'),
+                'customer_mobile' => $request->input('phone'),
                 'total' => $request->input('amount'),
             ]);
 
@@ -63,9 +69,6 @@ class UserController extends Controller
             $response->status()->message();
         }
 
-        dd($response->processUrl);
-
-        return $response;
-        // return redirect()->away($response['processUrl']);
+        return $order;
     }
 }

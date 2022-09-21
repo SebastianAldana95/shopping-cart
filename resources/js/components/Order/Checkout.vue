@@ -51,10 +51,12 @@
                         type="text"
                         id="customer_name"
                         name="customer_name"
-                        class="w-full bg-gray-100 rounded border-gray-300 focus:border-indigo-500 focus:outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                        class="block @error('name') border-red-500 @enderror w-full bg-gray-100 rounded border-gray-300 focus:border-indigo-500 focus:outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                         v-model="customer.name"
                         :disabled="paymentProcessing"
+                        required
                     >
+                    <p v-if="errors.name" class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>{{ errors.name[0] }}</p>
                 </div>
                 <div class="w-full md:w-1/2 px-3">
                     <label for="customer_email" class="leading-7 text-sm text-gray-600 font-bold">Email del
@@ -66,7 +68,9 @@
                         class="w-full bg-gray-100 rounded border-gray-300 focus:border-indigo-500 focus:outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                         v-model="customer.email"
                         :disabled="paymentProcessing"
+                        required
                     >
+                    <p v-if="errors.email" class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>{{ errors.email[0] }}</p>
                 </div>
             </div>
             <div class="flex flex-wrap -mx-3 mb-2">
@@ -78,9 +82,11 @@
                         id="customer_mobile"
                         name="customer_mobile"
                         class="w-full bg-gray-100 rounded border-gray-300 focus:border-indigo-500 focus:outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                        v-model="customer.mobile"
+                        v-model="customer.phone"
                         :disabled="paymentProcessing"
+                        required
                     >
+                    <p v-if="errors.phone" class="mt-2 text-sm text-red-600 dark:text-red-500"><span class="font-medium">Oops!</span>{{ errors.phone[0] }}</p>
                 </div>
             </div>
         </div>
@@ -104,12 +110,13 @@ export default {
             customer: {
                 name: '',
                 email: '',
-                mobile: '',
+                phone: '',
                 status: '',
                 total: '',
                 transaction_id: '',
                 transaction_url: ''
             },
+            errors: {},
             paymentProcessing: false
         }
     },
@@ -143,8 +150,12 @@ export default {
 
                 })
                 .catch((error) => {
+                    if (error.response.data)
+                    {
+                        this.errors = error.response.data.errors;
+                    }
                     this.paymentProcessing = false
-                    alert(error);
+                    // alert(error);
                     console.log(error);
                 });
         }
